@@ -3,9 +3,16 @@ The project consists of 4 modules which are a Scanning Station, Festo PLC, UR5, 
 
 ## Festo PLC
 
+```st
+codeGoesHereLater()
+```
 
 ## Scanning Station
-
+```cpp
+codeGoesHereLater();
+```
 
 ## A Java-based server bound to wireless (PLC Client) and wired (UR5 Client)
-
+```java
+codeGoesHereLater();
+```
