@@ -1,9 +1,16 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -17,8 +24,14 @@ public class DualServer {
 	public static ArrayList<Server> clients = new ArrayList<Server>();
 	private static JFrame frame;
 	private static JTextArea plc, ur;
-	private static JTable tab;
-	private static DefaultTableModel tabModel = new DefaultTableModel();
+	private static JTable tab1;
+	private static DefaultTableModel tabModel1 = new DefaultTableModel();
+	private static JTable tab2;
+	private static DefaultTableModel tabModel2 = new DefaultTableModel();
+	private static JPanel tablePnale;
+	private static BufferedImage img;
+	private static ImageIcon icon;
+	private static JLabel lbl;
 	
 	public DualServer() {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -31,24 +44,43 @@ public class DualServer {
 				frame.setLayout(new BorderLayout());
 				plc = new JTextArea();
 				ur = new JTextArea();
-				plc.setPreferredSize(new Dimension(680, 0));
+				plc.setPreferredSize(new Dimension(600, 0));
 				plc.setEditable(false);
 				plc.setFont(new Font(null, Font.PLAIN, 16));
-				ur.setPreferredSize(new Dimension(680, 0));
+				ur.setPreferredSize(new Dimension(600, 0));
 				ur.setEditable(false);
 				ur.setFont(new Font(null, Font.PLAIN, 16));
-				tab = new JTable(tabModel);
-				tabModel.addColumn("ID");
-				tabModel.addColumn("Time");
-				tabModel.addColumn("Empty");
-				tabModel.addColumn("Ready");
-				tabModel.addColumn("MPN");
+				tab1 = new JTable(tabModel1);
+				tabModel1.addColumn("Carrier ID");
+				tabModel1.addColumn("Time");
+				tabModel1.addColumn("Empty");
+				tabModel1.addColumn("Ready");
+				tabModel1.addColumn("MPN");
+				tab2 = new JTable(tabModel2);
+				tabModel2.addColumn("Carrier ID");
+				tabModel2.addColumn("Time");
+				//tabModel2.addColumn("Empty");
+				//tabModel2.addColumn("Ready");
+				tabModel2.addColumn("MPN");
 				JScrollPane scr1 = new JScrollPane(plc);
 				JScrollPane scr2 = new JScrollPane(ur);
-				JScrollPane scr3 = new JScrollPane(tab);
+				JScrollPane scr3 = new JScrollPane(tab1);
+				JScrollPane scr4 = new JScrollPane(tab2);
 				frame.add(scr1, BorderLayout.WEST);
 				frame.add(scr2, BorderLayout.CENTER);
-				frame.add(scr3, BorderLayout.EAST);
+				
+				tablePnale = new JPanel();
+				tablePnale.setLayout(new BorderLayout());
+				scr3.setPreferredSize(new Dimension(0, 360));
+				scr4.setPreferredSize(new Dimension(0, 360));
+				tablePnale.add(scr3, BorderLayout.NORTH);
+				tablePnale.add(scr4, BorderLayout.SOUTH);
+				//tablePnale.remove(((BorderLayout)tablePnale.getLayout()).getLayoutComponent(BorderLayout.CENTER));
+				tablePnale.setPreferredSize(new Dimension(640, 0));
+				lbl = new JLabel();
+				tablePnale.add(lbl, BorderLayout.CENTER);
+				frame.add(tablePnale, BorderLayout.EAST);
+				//frame.add(scr3, BorderLayout.EAST);
 				new Thread(new ServerPLC("172.20.66.65", 2565)).start();
 				new Thread(new ServerUR("192.168.1.137", 2566)).start();
 			}
@@ -60,13 +92,36 @@ public class DualServer {
 	}
 	
 	public static void updateTable() {
-		while(Carrier.list.size() != tabModel.getRowCount()) tabModel.addRow(new Object[] {});
-		for(int i = 0; i < Carrier.list.size(); i++){
-			tabModel.setValueAt(Carrier.list.get(i).getId(), i, 0);
-			tabModel.setValueAt(((double)Carrier.list.get(i).getTime())/1000, i, 1);
-			tabModel.setValueAt(Carrier.list.get(i).isEmpty(), i, 2);
-			tabModel.setValueAt(Carrier.list.get(i).isReady(), i, 3);
-			tabModel.setValueAt(Carrier.list.get(i).getMPN(), i, 4);
+		while(Carrier.carrierMap.size() > tabModel1.getRowCount()) {
+			tabModel1.addRow(new Object[] {});
+		}
+		
+		while(Carrier.resultList.size() > tabModel2.getRowCount()) {
+			tabModel2.addRow(new Object[] {});
+		}
+		
+		for(int i = 0; i < Carrier.carrierMap.size(); i++){
+			tabModel1.setValueAt(((Carrier)Carrier.carrierMap.values().toArray()[i]).getId(), i, 0);
+			tabModel1.setValueAt(((((Carrier)Carrier.carrierMap.values().toArray()[i]).getTime())/1000) +"s", i, 1);
+			tabModel1.setValueAt(((Carrier)Carrier.carrierMap.values().toArray()[i]).isEmpty(), i, 2);
+			tabModel1.setValueAt(((Carrier)Carrier.carrierMap.values().toArray()[i]).isReady(), i, 3);
+			tabModel1.setValueAt(((Carrier)Carrier.carrierMap.values().toArray()[i]).getMPN(), i, 4);
+		}
+		try {
+			//lbl.setIcon(icon);
+			ImageIcon icon = new ImageIcon("/home/momo/Downloads/img.jpg");
+            icon.getImage().flush();
+            lbl.setIcon( icon );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for(int i = 0; i < Carrier.resultList.size(); i++){
+			System.out.println("Debugs: "+ Carrier.resultList.size() +"\t"+ i);
+			tabModel2.setValueAt(Carrier.resultList.get(i).getId(), i, 0);
+			tabModel2.setValueAt(Carrier.resultList.get(i).getDeadTime()/1000 +"s", i, 1);
+			tabModel2.setValueAt(Carrier.resultList.get(i).getMPN(), i, 2);
+			//Carrier.resultList.get(i).getDeadTime()
 		}
 	}
 	
