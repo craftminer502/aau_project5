@@ -5,15 +5,15 @@ The test of the project may be viewed [here](https://www.youtube.com/playlist?li
 
 ## A Java-based server bound to wireless (PLC Client) and wired (UR5 Client)
 An interface was created and a new Server type may be created by extending Server and overriding the following methods.
-### onDisconnect is called upon a java.net.Socket being passed to the thread.
+#### onDisconnect is called upon a java.net.Socket being passed to the thread.
 ```java
 onConnect();
 ```
-### onDisconnect is called upon a java.io.EOFException occuring, hence allowing for a timeout.
+#### onDisconnect is called upon a java.io.EOFException occuring, hence allowing for a timeout.
 ```java
 onDisconnect();
 ```
-### onMessage is called when the server instance is able to read a byte with a value above 0.
+#### onMessage is called when the server instance is able to read a byte with a value above 0.
 ```java
 onMessage(String);
 ```
