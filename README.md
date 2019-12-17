@@ -17,3 +17,5 @@ onDisconnect();
 ```java
 onMessage(String);
 ```
+#### A screenshot of the GUI during the first test
+(https://raw.githubusercontent.com/craftminer502/aau_project5/master/guipic.png)
