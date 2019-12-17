@@ -18,4 +18,4 @@ onDisconnect();
 onMessage(String);
 ```
 #### A screenshot of the GUI during the first test
-![Test](https://raw.githubusercontent.com/craftminer502/aau_project5/master/guipic.png)
+![](https://raw.githubusercontent.com/craftminer502/aau_project5/master/guipic.png)
